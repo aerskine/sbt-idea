@@ -67,6 +67,24 @@ class IdeaProjectDescriptor(val project: BasicDependencyProject, val log: Logger
       <mapping directory="" vcs={vcsName} />
     </component>
 
+  private def compilerComponent: xml.Node =
+    <component name="CompilerConfiguration">
+      <option name="DEFAULT_COMPILER" value="Javac" />
+      <resourceExtensions>
+        <entry name=".+\.(properties|xml|html|dtd|tld)" />
+        <entry name=".+\.(gif|png|jpeg|jpg)" />
+      </resourceExtensions>
+      <wildcardResourcePatterns>
+        {
+          val entryNodes = new scala.xml.NodeBuffer
+          for (entry <- env.wildcardResourcePatterns.value.split(";")) 
+            entryNodes &+ <entry name={entry} />
+          entryNodes
+        }
+      </wildcardResourcePatterns>
+      <annotationProcessing enabled="false" useClasspath="true" />
+    </component>
+
   def save {
     def saveFile(dir: File, fileName: String, node: xml.Node) {
       XML.save(new File(dir, fileName).getAbsolutePath, node)
@@ -79,7 +97,8 @@ class IdeaProjectDescriptor(val project: BasicDependencyProject, val log: Logger
 
       Seq(
         "modules.xml" -> project(projectModuleManagerComponent),
-        "misc.xml" -> miscTransformer.transform(miscXml(configDir)).firstOption.get
+        "misc.xml" -> miscTransformer.transform(miscXml(configDir)).firstOption.get,
+        "compiler.xml" -> project(compilerComponent)
       ) foreach { case (fileName, xmlNode) => saveFile(configDir, fileName, xmlNode) }
 
       if (!configFile("vcs.xml").exists) saveFile(configDir, "vcs.xml", project(vcsComponent))

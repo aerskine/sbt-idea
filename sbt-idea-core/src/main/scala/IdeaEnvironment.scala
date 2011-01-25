@@ -13,6 +13,7 @@ class IdeaEnvironment(project: Project) extends BasicEnvironment {
   lazy val projectOutputPath = propertyLocal[String]
   lazy val excludeLibmanagedFolders = propertyOptional[Boolean](false, true)
   lazy val compileWithIdea = propertyOptional[Boolean](false, true)
+  lazy val wildcardResourcePatterns = propertyOptional[String]("?*.properties;?*.xml;?*.gif;?*.png;?*.jpeg;?*.jpg;?*.html;?*.dtd;?*.tld;?*.ftl;?*.properties;?*.xml;?*.html;?*.dtd;?*.tld;?*.gif;?*.png;?*.jpeg;?*.jpg", true)
 
   def envBackingPath = project.info.builderPath / "idea.properties"
   def log = project.log 
